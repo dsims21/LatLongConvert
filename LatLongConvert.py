@@ -12,6 +12,17 @@ def city_state_country(coord):
 
     return city, county, state, country, ZIP
 
+def country_county_zip(lat, long):
+    coord = str(lat) + ', ' + str(long)
+    location = geolocator.reverse(coord, exactly_one=True)
+    address = location.raw['address']
+    county = address.get('county', '')
+    country = address.get('country', '')
+    ZIP = address.get('postcode', '')
+
+    return country, county, ZIP
+
+
 def get_county(lat, long):
     coord = str(lat)+', '+str(long)
     location = geolocator.reverse(coord, exactly_one=True)
@@ -38,34 +49,26 @@ def get_country(lat, long):
 
 geolocator = Nominatim(user_agent="MyGeocoder")
 
-location = geolocator.reverse("47.6144239, -122.19215913827682")
-address = location.raw['address']
-county = address.get('country', '')
-
-print(location.raw)
-print(city_state_country("47.6144239, -122.19215913827682"))
-
-
-fields = ['ID', 'Latitude', 'Longitude']
 df = pd.read_csv("ghcnd-stations-lat-long.csv",)
 
-#df["Country"] = df.apply(lambda x: city_state_country("47.6144239, -122.19215913827682"), axis=1)
 df["Country"] = ""
 df["County"] = ""
 df["ZIP"] = ""
 
 for index, row in df.iterrows():
-    #print(row['c1'], row['c2'])
-    #country = get_country(row['Latitude'],row['Longitude'])
 
-    df.loc[df.index[index], 'Country'] = get_country(row['Latitude'],row['Longitude'])
-    df.loc[df.index[index], 'County'] = get_county(row['Latitude'], row['Longitude'])
-    df.loc[df.index[index], 'ZIP'] = get_ZIP(row['Latitude'], row['Longitude'])
+    lat = float(row['Latitude'])
+    long = float(row['Longitude'])
 
-    print('Row:'+ str(index))
-    #row['Country'] = get_country(row['Latitude'],row['Longitude'])
-    #row['County'] = str(get_county(row['Latitude'], row['Longitude']))
-    #row['ZIP'] = get_ZIP(row['Latitude'], row['Longitude'])
+    #Initially checking just WA state
+    if 49.196064 > lat > 45.576501 and -125.375188 < long < -116.821468:
+        data = country_county_zip(row['Latitude'],row['Longitude'])
+        #Add data pieces to columns in the dataframe
+        df.loc[df.index[index], 'Country'] = data[0]
+        df.loc[df.index[index], 'County'] = data[1]
+        df.loc[df.index[index], 'ZIP'] = data[2]
+        #Just for debugging/interest, print line found.
+        print('Row:'+ str(index))
 
 df.to_csv("sample.csv", index=False)
 
