@@ -15,8 +15,7 @@ def country_state_county_zip(lat, long):
 
 geolocator = Nominatim(user_agent="MyGeocoder")
 
-#df = pd.read_csv("ghcnd-stations-lat-long.csv",)
-df = pd.read_csv("sample.csv",)
+df = pd.read_csv("ghcnd-stations-lat-long.csv",)
 
 #Create columns if they dont exist (ie: if the file has not been run before)
 if 'Country' not in df:
