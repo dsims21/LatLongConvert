@@ -15,7 +15,7 @@ def country_state_county_zip(lat, long):
 
 geolocator = Nominatim(user_agent="MyGeocoder")
 
-df = pd.read_csv("ghcnd-stations-lat-long.csv",)
+df = pd.read_csv("ground_station_custom_locations.csv",)
 
 #Create columns if they dont exist (ie: if the file has not been run before)
 if 'Country' not in df:
@@ -36,8 +36,9 @@ for i in range(3): #Run through the below loop three times to make sure none mis
         #Initially checking just WA state
         #if 49.196064 > lat > 45.576501 and -125.375188 < long < -116.821468:
         #Entire US
-        if 22.824922 < lat < 49.774613  and -126.196032 < long < -64.103819 \
-                and pd.isnull(df.loc[df.index[index], 'Country']) == True:
+        #if 22.824922 < lat < 49.774613  and -126.196032 < long < -64.103819 \
+        #         and pd.isnull(df.loc[df.index[index], 'Country']) == True:
+        if pd.isnull(df.loc[df.index[index], 'Country']) == True:
             try:
 
                 #Get data
@@ -54,7 +55,7 @@ for i in range(3): #Run through the below loop three times to make sure none mis
 
             except:
                 print('Error on row: ' + str(index))
-                time.sleep(5)
+                time.sleep(1)
                 df.to_csv("finalError.csv", index=False)
 
 #Export to new CSV
