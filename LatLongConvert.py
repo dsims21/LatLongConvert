@@ -1,6 +1,5 @@
 from geopy.geocoders import Nominatim
 import pandas as pd
-import time
 
 def country_state_county_zip(lat, long):
     coord = str(lat) + ', ' + str(long)
@@ -15,7 +14,7 @@ def country_state_county_zip(lat, long):
 
 geolocator = Nominatim(user_agent="MyGeocoder")
 
-df = pd.read_csv("ground_station_custom_locations.csv",)
+df = pd.read_csv("demo-ghcnd-stations-lat-long.csv",)
 
 #Create columns if they dont exist (ie: if the file has not been run before)
 if 'Country' not in df:
@@ -27,17 +26,22 @@ if 'County' not in df:
 if 'ZIP' not in df:
     df["ZIP"] = ""
 
-for i in range(3): #Run through the below loop three times to make sure none missed due to errors.
+# Because on large files there will be timeout errors, run through the loop three times,
+# This will make sure that rows had errors will have a 2nd and 3rd chance to be looked at.
+for i in range(3):
     for index, row in df.iterrows():
 
         lat = float(row['Latitude'])
         long = float(row['Longitude'])
 
-        #Initially checking just WA state
-        #if 49.196064 > lat > 45.576501 and -125.375188 < long < -116.821468:
-        #Entire US
+        #For checking just WA state
+        #if 49.196064 > lat > 45.576501 and -125.375188 < long < -116.821468 \
+        #         and pd.isnull(df.loc[df.index[index], 'Country']) == True:
+
+        #For checking entire US
         #if 22.824922 < lat < 49.774613  and -126.196032 < long < -64.103819 \
         #         and pd.isnull(df.loc[df.index[index], 'Country']) == True:
+
         if pd.isnull(df.loc[df.index[index], 'Country']) == True:
             try:
 
@@ -55,7 +59,6 @@ for i in range(3): #Run through the below loop three times to make sure none mis
 
             except:
                 print('Error on row: ' + str(index))
-                time.sleep(1)
                 df.to_csv("finalError.csv", index=False)
 
 #Export to new CSV
