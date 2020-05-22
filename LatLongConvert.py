@@ -42,7 +42,7 @@ for i in range(3):
         #if 22.824922 < lat < 49.774613  and -126.196032 < long < -64.103819 \
         #         and pd.isnull(df.loc[df.index[index], 'Country']) == True:
 
-        if pd.isnull(df.loc[df.index[index], 'Country']) == True:
+        if len(df.loc[df.index[index], 'Country']) == 0:
             try:
 
                 #Get data
