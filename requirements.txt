@@ -1,0 +1,5 @@
+# Version Requirements
+
+
+pandas==0.24.0
+pandas-datareader==0.7.0
